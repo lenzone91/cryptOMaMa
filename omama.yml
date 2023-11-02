@@ -1,0 +1,9 @@
+# run: conda env create --file environment.yml
+name: omama
+dependencies:
+- python=3.10
+- numpy=1.26.0
+- pandas=2.1.1
+- pip
+- binance-connector=3.5.0
+- cryptography=41.0.5

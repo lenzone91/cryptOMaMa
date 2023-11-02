@@ -1,0 +1,22 @@
+{
+    "actions": [
+        {"compute_quotes":
+            {
+            "model":"GueantLehalleFernandezTapia"
+            }
+        },
+        {"compute_quotes":
+            {
+            "model":"GueantLehalleFernandezTapia"
+            }
+        },
+        {"use_api":
+            {
+            "api":"binance",
+            "api_key":"0SXuHpJ7QaEDz7h3W5llSTDD0srUzIfDvAyLUZtQI0pXzBZWLDmJNKcIlAjejFbM",
+            "private_key":"Private_key.pem",
+            "symbol":"BTCUSDT"
+            }
+        }
+    ]   
+}
