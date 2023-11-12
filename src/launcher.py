@@ -17,7 +17,8 @@ class Launcher(object):
                     symbol = action["use_api"]["symbol"]
 
                     self.binance = Binance(api_key,private_key)
-                    avgPrice = self.binance.get_avgPrice(symbol)
+                    bids, asks = self.binance.get_depth(symbol)
+                    print(bids)
 
     def create_model(self, action):
         if action["model"] == "GueantLehalleFernandezTapia":
