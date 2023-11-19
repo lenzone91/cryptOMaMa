@@ -1,6 +1,6 @@
-###############################
-# input arguments treatment   #
-###############################
+"""
+Input arguments treatment
+"""
 
 import argparse
 import json
@@ -9,7 +9,7 @@ def process_arguments():
     """
     Process command line arguments, including optional input file processing.
     """
-     
+
     parser = create_parser()
     args = parser.parse_args()
 
@@ -26,7 +26,8 @@ def create_parser():
                     description='What the program does',
                     epilog='Text at the bottom of help')
     
-    parser.add_argument('mode',choices=['run', 'test'], help='Specify if you want "run" or "test" a strategy.')
+    parser.add_argument('mode',choices=['run', 'test'], \
+                        help='Specify if you want "run" or "test" a strategy.')
     parser.add_argument('--input_file', help='Specify input files')
     parser.add_argument('--api', type=str, help='API (ex: binance)')
     parser.add_argument('--api_key', type=str, help='API key')
@@ -46,7 +47,8 @@ def process_inputs_from_json(args):
 
             # Update the value of the "use_api" key if it is present in the JSON data
             if 'use_api' in json_data:
-                # Update the values of the existing_args object with those from the "use_api" section
+                # Update the values of the existing_args object with those from the
+                # "use_api" section
                 api_data = json_data['use_api']
                 for key, value in api_data.items():
                     setattr(args, key, value)
@@ -60,4 +62,5 @@ def process_inputs_from_json(args):
     except FileNotFoundError:
         print(f'The file {args.input_file} does not exist.')
     except json.JSONDecodeError:
-        print(f'JSON decoding error in the file {args.input_file}. Ensure it is in valid JSON format.')
+        print(f'JSON decoding error in the file {args.input_file}.\
+              Ensure it is in valid JSON format.')

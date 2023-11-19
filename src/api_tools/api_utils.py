@@ -1,12 +1,12 @@
 """
-Useful methods for managing all APIs like a factory
+Useful methods for managing all APIs like a factory method.
 """
 
 from src.api_tools.brokers.binance import Binance
 
 def create_broker(api, api_key, private_key):
     """
-    Factory method to create the correct instance of an API class
+    Factory method to create the correct instance of an API class.
     """
 
     if api == "binance":

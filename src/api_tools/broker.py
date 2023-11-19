@@ -1,12 +1,12 @@
 """
-Abstract base class for Brokers
+Abstract base class for brokers
 """
 
 from abc import ABC, abstractmethod
 
 class Broker(ABC):
     """
-    Abstract base class for Brokers
+    Abstract base class for brokers
     """
 
     @abstractmethod
@@ -38,4 +38,3 @@ class Broker(ABC):
         """
         Abstract method for getting depth information.
         """
-        
