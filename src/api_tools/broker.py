@@ -1,27 +1,40 @@
+"""
+Abstract base class for brokers
+"""
+
 from abc import ABC, abstractmethod
 
 class Broker(ABC):
-    
+    """
+    Abstract base class for brokers
+    """
+
     @abstractmethod
     def post_request(self):
-        pass
+        """
+        Abstract method for handling POST requests.
+        """
 
     @abstractmethod
     def get_request(self):
-        pass
+        """
+        Abstract method for handling GET requests.
+        """
 
     @abstractmethod
-    def get_avgPrice(self, symbol):
-        pass
+    def get_avg_price(self, symbol):
+        """
+        Abstract method for getting average price.
+        """
 
     @abstractmethod
     def ping(self):
-        pass
+        """
+        Abstract method for handling ping requests.
+        """
 
     @abstractmethod
     def get_depth(self, symbol):
-        pass
-
-
-
-
+        """
+        Abstract method for getting depth information.
+        """

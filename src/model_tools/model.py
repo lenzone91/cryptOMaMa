@@ -1,12 +1,15 @@
+"""
+Abstract base class for models
+"""
+
 from abc import ABC, abstractmethod
 
 class Model(ABC):
-    
+    """
+    Abstract base class for models
+    """
     @abstractmethod
     def compute_quotes(self):
-        pass
-
-
-
-
-
+        """
+        Abstract method for compute quotes.
+        """
