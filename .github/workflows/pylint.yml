@@ -24,4 +24,8 @@ jobs:
         pip install requests
     - name: Analysing the code with pylint
       run: |
-        pylint $(git ls-files '*.py')
+        pylint_score=$(pylint $(git ls-files '*.py') | grep -oP '(?<=Your\scode\s*\-\s*)\d+(?:\.\d+)?')
+        if (( $(echo "$pylint_score < 8" | bc -l) )); then
+          echo "Pylint score is less than 8. Exiting with failure."
+          exit 1
+        fi
