@@ -3,3 +3,5 @@
 *.pyc*
 inputs.json
 launch.json
+.vscode
+launch.json
