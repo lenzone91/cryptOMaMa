@@ -25,7 +25,7 @@ def create_parser():
                     prog='CryptOMaMa',
                     description='What the program does',
                     epilog='Text at the bottom of help')
-    
+
     parser.add_argument('mode',choices=['run', 'test'], \
                         help='Specify if you want "run" or "test" a strategy.')
     parser.add_argument('--input_file', help='Specify input files')
@@ -34,7 +34,7 @@ def create_parser():
     parser.add_argument('--private_key', type=str, help='Path to your private key')
     parser.add_argument('--symbol', type=str, help='Symbol (ex: BTCUSDT)')
     parser.add_argument('--model', type=str, help='Modèle (ex: GueantLehalleFernandezTapia)')
-    
+
     return parser
 
 def process_inputs_from_json(args):

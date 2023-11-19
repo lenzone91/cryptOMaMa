@@ -2,9 +2,9 @@
 Implementation of the Broker interface for Binance.
 """
 
-import requests
 import base64
 import time
+import requests
 import numpy as np
 from cryptography.hazmat.primitives.serialization import load_pem_private_key
 from src.api_tools.broker import Broker
@@ -31,7 +31,7 @@ class Binance(Broker):
         """
         with open(self.private_key, 'rb') as f:
             self.private_key = load_pem_private_key(data=f.read(),password=None)
- 
+
         timestamp = int(time.time() * 1000)
         self.params['timestamp'] = timestamp
 
@@ -64,7 +64,7 @@ class Binance(Broker):
         self.request_type = "avgPrice"
         self.params = {
             'symbol': symbol
-        } 
+        }
         return self.get_request()
 
     def ping(self):

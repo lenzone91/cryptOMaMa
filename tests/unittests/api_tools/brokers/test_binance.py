@@ -3,8 +3,8 @@ Binance class test
 """
 
 import unittest
-import numpy as np
 from unittest.mock import patch
+import numpy as np
 from src.api_tools.brokers.binance import Binance
 
 class TestBinance(unittest.TestCase):

@@ -16,6 +16,9 @@ class TestModel(unittest.TestCase):
         """
         # Create an anonymous subclass of Model without implementing compute_quotes
         class MockModel(Model):
+            '''
+            Initialize empty class for tests
+            '''
             pass
 
         # Use the assertRaises context to check if NotImplementedError is raised

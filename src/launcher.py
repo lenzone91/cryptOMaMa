@@ -3,7 +3,7 @@ Launcher class for handling the execution of the model with a specified broker.
 """
 
 from src.model_tools.model_utils import create_model
-import src.api_tools.api_utils as api_utils
+from src.api_tools import api_utils
 class Launcher:
     """
     Launcher class for handling the execution of the model with a specified broker or input datas.

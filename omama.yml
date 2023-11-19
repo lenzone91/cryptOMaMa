@@ -5,5 +5,5 @@ dependencies:
 - numpy=1.26.0
 - pandas=2.1.1
 - pip
-- binance-connector=3.5.0
 - cryptography=41.0.5
+- requests

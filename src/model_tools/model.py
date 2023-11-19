@@ -13,4 +13,3 @@ class Model(ABC):
         """
         Abstract method for compute quotes.
         """
-        pass
