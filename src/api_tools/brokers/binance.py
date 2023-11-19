@@ -43,7 +43,7 @@ class Binance(Broker):
         )
         return response.json()
     
-    def get_avgPrice(self, symbol):
+    def get_avg_price(self, symbol):
         self.request_type = "avgPrice"
         self.params = {
             'symbol': symbol

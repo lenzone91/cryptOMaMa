@@ -14,10 +14,10 @@ class TestBroker(unittest.TestCase):
         with self.assertRaises(TypeError):
             Broker().get_request()
 
-    def test_get_avgPrice(self):
-        # Ensure the get_avgPrice method is abstract and raises TypeError
+    def test_get_avg_price(self):
+        # Ensure the get_avg_price method is abstract and raises TypeError
         with self.assertRaises(TypeError):
-            Broker().get_avgPrice('BTCUSDT')
+            Broker().get_avg_price('BTCUSDT')
 
     def test_ping(self):
         # Ensure the ping method is abstract and raises TypeError

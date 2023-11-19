@@ -11,15 +11,15 @@ class TestBinance(unittest.TestCase):
         self.mock_private_key = "mock_private_key"
 
     @patch('src.api_tools.brokers.binance.Binance.get_request')
-    def test_get_avgPrice(self, mock_get_request):
+    def test_get_avg_price(self, mock_get_request):
         # Create a Binance instance
         binance = Binance(self.mock_api_key, self.mock_private_key)
 
         # Mock the get_request method
         mock_get_request.return_value = {'avgPrice': '123.45'}
 
-        # Call the get_avgPrice method
-        result = binance.get_avgPrice('BTCUSDT')
+        # Call the get_avg_price method
+        result = binance.get_avg_price('BTCUSDT')
 
         # Assert that the get_request method was called with the expected parameters
         mock_get_request.assert_called_once()

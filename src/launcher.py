@@ -19,7 +19,8 @@ class Launcher(object):
             if self.api :
                 response = self.broker.ping()
                 print(response)
-            self.model.compute_quotes(True,1,1,10,1,1,1,0)
+            quotes = self.model.compute_quotes(True,1,1,10,1,1,1,0)
+            print(quotes)
 
         
     

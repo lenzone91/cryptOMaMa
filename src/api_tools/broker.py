@@ -14,32 +14,28 @@ class Broker(ABC):
         """
         Abstract method for handling POST requests.
         """
-        pass
 
     @abstractmethod
     def get_request(self):
         """
         Abstract method for handling GET requests.
         """
-        pass
 
     @abstractmethod
-    def get_avgPrice(self, symbol):
+    def get_avg_price(self, symbol):
         """
         Abstract method for getting average price.
         """
-        pass
 
     @abstractmethod
     def ping(self):
         """
         Abstract method for handling ping requests.
         """
-        pass
 
     @abstractmethod
     def get_depth(self, symbol):
         """
         Abstract method for getting depth information.
         """
-        pass
+        
