@@ -12,7 +12,7 @@
             "cwd": "C:\\Users\\33615\\Documents\\code\\cryptOMaMa",
             "program": "C:\\Users\\33615\\Documents\\code\\cryptOMaMa\\main.py",
             "console": "integratedTerminal",
-            "args": ["--input_file","inputs.json"],
+            "args": ["run","--input_file","inputs.json"],
             "justMyCode": true
         }
     ]

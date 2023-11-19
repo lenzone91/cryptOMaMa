@@ -3,11 +3,13 @@ import base64
 import time
 import numpy as np
 from cryptography.hazmat.primitives.serialization import load_pem_private_key
+from src.api_tools.broker import Broker
 
-class Binance():
+class Binance(Broker):
     def __init__(self, api_key, private_key):
+        super().__init__()
         self.api_key = api_key
-        self.private_key_path = private_key
+        self.private_key = private_key
         self.params = {}
         self.url = 'https://api.binance.com/api/v3/'
         self.headers = {
@@ -48,7 +50,7 @@ class Binance():
         } 
         return self.get_request()
     
-    def get_ping(self):
+    def ping(self):
         self.request_type = "ping"
         self.params = {} 
         return self.get_request()
