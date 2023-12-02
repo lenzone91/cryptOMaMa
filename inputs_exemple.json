@@ -1,7 +1,7 @@
 {
     "use_api": {
         "api": "binance",
-        "api_key": "0SXuHpJ7QaEDz7h3W5llSTDD0srUzIfDvAyLUZtQI0pXzBZWLDmJNKcIlAjejFbM",
+        "api_key": "Public_key",
         "private_key": "Private_key.pem",
         "symbol": "BTCUSDT"
     },
