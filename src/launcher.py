@@ -8,8 +8,8 @@ __author__ = "Enzo COGNEVILLE"
 __copyright__ = "Copyright 2023, CryptOMaMa"
 __license__ = "All rights reserved - LICENSE file is at the root of the project"
 
-from src.model_tools.model_utils import create_model
-from src.api_tools import api_utils
+from .model_tools.model_utils import create_model
+from .api_tools import api_utils
 
 class Launcher:
     """

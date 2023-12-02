@@ -14,6 +14,9 @@ class Broker(ABC):
     """
     Abstract base class for brokers
     """
+    @abstractmethod
+    def __init__(self, name: str):
+        self.name = name
 
     @abstractmethod
     def post_request(self):

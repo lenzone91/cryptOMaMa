@@ -10,3 +10,4 @@ __license__ = "All rights reserved - LICENSE file is at the root of the project"
 
 from .api_utils import create_broker
 from .broker import Broker
+from . import brokers

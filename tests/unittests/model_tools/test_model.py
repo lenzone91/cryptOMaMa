@@ -33,7 +33,7 @@ class TestModel(unittest.TestCase):
 
         # Ensure that the error message is as expected
         expected_error_message = "Can't instantiate abstract class MockModel with "+\
-            "abstract method compute_quotes"
+            "abstract method __init__"
         self.assertEqual(str(context.exception), expected_error_message)
 
 if __name__ == '__main__':

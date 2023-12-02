@@ -9,3 +9,4 @@ __copyright__ = "Copyright 2023, CryptOMaMa"
 __license__ = "All rights reserved - LICENSE file is at the root of the project"
 
 from .binance import Binance
+from ..broker import Broker

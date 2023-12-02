@@ -8,7 +8,7 @@ __author__ = "Enzo COGNEVILLE"
 __copyright__ = "Copyright 2023, CryptOMaMa"
 __license__ = "All rights reserved - LICENSE file is at the root of the project"
 
-from src.model_tools.models.gueant_lehalle_fernandez_tapia import GueantLehalleFernandezTapia
+from .models.gueant_lehalle_fernandez_tapia import GueantLehalleFernandezTapia
 
 def create_model(model):
     """

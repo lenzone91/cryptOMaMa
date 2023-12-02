@@ -13,7 +13,7 @@ import time
 import requests
 import numpy as np
 from cryptography.hazmat.primitives.serialization import load_pem_private_key
-from src.api_tools.broker import Broker
+from ..broker import Broker
 
 class Binance(Broker):
     """
@@ -21,7 +21,7 @@ class Binance(Broker):
     """
 
     def __init__(self, api_key, private_key):
-        super().__init__()
+        super().__init__("Binance")
         self.api_key = api_key
         self.private_key = private_key
         self.params = {}

@@ -9,7 +9,7 @@ __copyright__ = "Copyright 2023, CryptOMaMa"
 __license__ = "All rights reserved - LICENSE file is at the root of the project"
 
 import numpy as np
-from src.model_tools.model import Model
+from ..model import Model
 
 class GueantLehalleFernandezTapia(Model):
     """

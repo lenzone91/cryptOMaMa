@@ -8,7 +8,7 @@ __author__ = "Enzo COGNEVILLE"
 __copyright__ = "Copyright 2023, CryptOMaMa"
 __license__ = "All rights reserved - LICENSE file is at the root of the project"
 
-from src.api_tools.brokers.binance import Binance
+from .brokers.binance import Binance
 
 def create_broker(api, api_key, private_key):
     """
