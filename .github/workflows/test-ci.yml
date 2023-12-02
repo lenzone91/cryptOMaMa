@@ -1,4 +1,4 @@
-name: Pylintpip
+name: Tests
 
 on: [push]
 
@@ -25,3 +25,6 @@ jobs:
     - name: Analysing the code with pylint
       run: |
         pylint --fail-under=8 $(git ls-files '*.py')
+    - name: Run unittests
+      run: |
+        python -m unittest discover -s ./tests/unittests
