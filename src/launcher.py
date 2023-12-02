@@ -1,9 +1,16 @@
+# -*- coding utf-8 -*-
 """
-Launcher class for handling the execution of the model with a specified broker.
+Created on november 2023
+Copyright © 2023 - CryptOMaMa
 """
+
+__author__ = "Enzo COGNEVILLE"
+__copyright__ = "Copyright 2023, CryptOMaMa"
+__license__ = "All rights reserved - LICENSE file is at the root of the project"
 
 from src.model_tools.model_utils import create_model
 from src.api_tools import api_utils
+
 class Launcher:
     """
     Launcher class for handling the execution of the model with a specified broker or input datas.
@@ -31,7 +38,7 @@ class Launcher:
         """
         if self.mode == "run":
             if self.api :
-                response = self.broker.ping()
+                response = self.broker.get_avg_price(self.symbol)
                 print(response)
             quotes = self.model.compute_quotes(True,1,1,10,1,1,1,0)
             print(quotes)

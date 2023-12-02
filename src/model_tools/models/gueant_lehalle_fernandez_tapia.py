@@ -1,6 +1,12 @@
+# -*- coding utf-8 -*-
 """
-Implementation of the Gueant Lehalle Fernandez Tapia model.
+Created on november 2023
+Copyright © 2023 - CryptOMaMa
 """
+
+__author__ = "Enzo COGNEVILLE"
+__copyright__ = "Copyright 2023, CryptOMaMa"
+__license__ = "All rights reserved - LICENSE file is at the root of the project"
 
 import numpy as np
 from src.model_tools.model import Model
