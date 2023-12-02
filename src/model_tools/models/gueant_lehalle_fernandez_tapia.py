@@ -14,15 +14,58 @@ from ..model import Model
 class GueantLehalleFernandezTapia(Model):
     """
     Implementation of the Gueant Lehalle Fernandez Tapia model.
+
+    Notes
+    -----
+    More detail on the implemented model at : 
+    https://arxiv.org/abs/1105.3115
+    Dealing with the Inventory Risk. A solution to the market making problem.
+    Olivier Guéant, Charles-Albert Lehalle, Joaquin Fernandez Tapia
+
+    Parameters
+    ----------
+    None
+
+    Methods
+    -------
+    compute_quotes()
     """
 
     def __init__(self):
         super().__init__("GueantLehalleFernandezTapia")
 
-    def compute_quotes(self, with_penalty, A, k, q, delta, gamma, sigma, xi):
+    def compute_quotes(self, with_penalty: bool, A: float, k: float,
+                       q: float, delta: float, gamma: float, sigma: float, xi: float) -> (float,float):
         """
         Implement the quote computations method in one dimension.
+
+        Parameters
+        ----------
+        with_penalty : bool
+            Define if there is a penalty value
+        A : float
+            The second parameter.
+        k : float
+            The second parameter.
+        q : float
+            The second parameter.
+        delta : float
+            The second parameter.
+        gamma : float
+            The second parameter.
+        sigma : float
+            The second parameter.
+        xi : float
+            The second parameter.        
+            
+        Returns
+        -------
+        bid_quote : float
+            The best bid quote value
+        ask_quote : float
+            The best ask quote value
         """
+        
         if with_penalty:
             if xi == 0:
                 bid_quote = (1/k)+((2*q+delta)/2)*\

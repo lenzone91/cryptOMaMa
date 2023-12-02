@@ -10,11 +10,14 @@ __license__ = "All rights reserved - LICENSE file is at the root of the project"
 
 from .models.gueant_lehalle_fernandez_tapia import GueantLehalleFernandezTapia
 
-def create_model(model):
+def create_model(model: str):
     """
     Factory method to create the correct instance of a model
-    """
 
+    List of available models : 
+        - GueantLehalleFernandezTapia
+    """
+    
     if model == "GueantLehalleFernandezTapia":
         return GueantLehalleFernandezTapia()
     # Ajoutez d'autres cas selon les besoins pour de nouveaux brokers

@@ -18,9 +18,34 @@ from ..broker import Broker
 class Binance(Broker):
     """
     Implementation of the Broker interface for Binance.
+
+    Notes
+    -----
+    More details on the Binance API at : 
+    https://binance-docs.github.io/apidocs/spot/en/#market-data-endpoints
+
+    Parameters
+    ----------
+    api_key : str
+        public api key for Binance
+    private_key : str
+        private api key for Binance
+
+    Methods
+    -------
+    post_request()
+        Post a request
+    get_request()
+        Get a request
+    get_avg_price()
+        Get the average price of a symbol
+    ping()
+        Send a ping to the API server to check the connection
+    get_depth()
+        Get the available order book orders on the market for a symbol 
     """
 
-    def __init__(self, api_key, private_key):
+    def __init__(self, api_key: str, private_key: str):
         super().__init__("Binance")
         self.api_key = api_key
         self.private_key = private_key
@@ -65,9 +90,15 @@ class Binance(Broker):
         )
         return response.json()
 
-    def get_avg_price(self, symbol):
+    def get_avg_price(self, symbol: str):
         """
         Implement the get_avg_price method for Binance.
+        Get the average price of a symbol
+
+        Parameters
+        ----------
+        symbol : str
+            Pair symbol (e.g 'BTCUSDT') 
         """
         self.request_type = "avgPrice"
         self.params = {
@@ -78,6 +109,7 @@ class Binance(Broker):
     def ping(self):
         """
         Implement the ping method for Binance.
+        Send a ping to the API server to check the connection
         """
         self.request_type = "ping"
         self.params = {}
@@ -86,6 +118,12 @@ class Binance(Broker):
     def get_depth(self, symbol):
         """
         Implement the get_depth method for Binance.
+        Get the available order book orders on the market for a symbol 
+
+        Parameters
+        ----------
+        symbol : str
+            Pair symbol (e.g 'BTCUSDT') 
         """
         self.request_type = "depth"
         self.params = {
