@@ -48,7 +48,7 @@ def process_inputs_from_json(args):
     Process input data from a JSON file, updating argument values accordingly.
     """
     try:
-        with open(args.input_file, 'r') as file:
+        with open(args.input_file, 'r', encoding='utf-8') as file:
             json_data = json.load(file)
 
             # Update the value of the "use_api" key if it is present in the JSON data
@@ -65,8 +65,8 @@ def process_inputs_from_json(args):
 
         return args
 
-    except FileNotFoundError:
-        print(f'The file {args.input_file} does not exist.')
-    except json.JSONDecodeError:
-        print(f'JSON decoding error in the file {args.input_file}.\
-              Ensure it is in valid JSON format.')
+    except FileNotFoundError as exc:
+        raise ValueError(f'The file {args.input_file} does not exist.') from exc
+    except json.JSONDecodeError as exc:
+        raise ValueError(f'JSON decoding error in the file {args.input_file}.\
+              Ensure it is in valid JSON format.') from exc

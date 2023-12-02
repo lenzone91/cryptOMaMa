@@ -35,8 +35,8 @@ class Binance(Broker):
         """
         Implement the post_request method for Binance.
         """
-        with open(self.private_key, 'rb') as f:
-            self.private_key = load_pem_private_key(data=f.read(),password=None)
+        with open(self.private_key, 'rb') as key_file:
+            self.private_key = load_pem_private_key(data=key_file.read(),password=None)
 
         timestamp = int(time.time() * 1000)
         self.params['timestamp'] = timestamp
@@ -49,6 +49,7 @@ class Binance(Broker):
             self.url+self.request_type,
             headers=self.headers,
             data=self.params,
+            timeout=60
         )
         print(response.json())
         return response.json()
@@ -60,6 +61,7 @@ class Binance(Broker):
         response = requests.get(
             self.url+self.request_type,
             params=self.params,
+            timeout=60
         )
         return response.json()
 

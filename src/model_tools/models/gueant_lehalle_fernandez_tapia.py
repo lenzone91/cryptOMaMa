@@ -17,7 +17,7 @@ class GueantLehalleFernandezTapia(Model):
     """
 
     def __init__(self):
-        super().__init__()
+        super().__init__("GueantLehalleFernandezTapia")
 
     def compute_quotes(self, with_penalty, A, k, q, delta, gamma, sigma, xi):
         """
