@@ -42,21 +42,21 @@ class GueantLehalleFernandezTapia(Model):
         Parameters
         ----------
         with_penalty : bool
-            Define if there is a penalty value
+            Define if there is a penalty value.
         A : float
-            The second parameter.
+            First parameter of density function of the point process ``A*e^(-k*quote)``.
         k : float
-            The second parameter.
+            Second parameter of density function of the point process ``A*e^(-k*quote)``.
         q : float
-            The second parameter.
+            The inventory of the market maker.
         delta : float
-            The second parameter.
+            The volume step (usually equal to 1).
         gamma : float
-            The second parameter.
+            Value of the risk aversion
         sigma : float
-            The second parameter.
+            Volatility of the asset.
         xi : float
-            The second parameter.        
+            Equal to 0 or gamma.        
             
         Returns
         -------
