@@ -12,8 +12,10 @@ import base64
 import time
 import requests
 import numpy as np
+import pandas as pd
 from cryptography.hazmat.primitives.serialization import load_pem_private_key
 from ..broker import Broker
+
 
 class Binance(Broker):
     """
@@ -99,6 +101,14 @@ class Binance(Broker):
         ----------
         symbol : str
             Pair symbol (e.g 'BTCUSDT') 
+
+        Returns
+        -------
+        request : dict
+            {'mins' : Average price interval (in minutes),
+             'price' : Average price,
+             'closeTime' : Last trade time
+            }
         """
         self.request_type = "avgPrice"
         self.params = {
@@ -115,7 +125,7 @@ class Binance(Broker):
         self.params = {}
         return self.get_request()
 
-    def get_depth(self, symbol):
+    def get_depth(self, symbol, limit=20):
         """
         Implement the get_depth method for Binance.
         Get the available order book orders on the market for a symbol 
@@ -124,13 +134,48 @@ class Binance(Broker):
         ----------
         symbol : str
             Pair symbol (e.g 'BTCUSDT') 
+        limit : int
+            Size of the wanted LOB. (20 at each side by default)
+
+        Returns
+        -------
+        bids : np.array
+            The actual n first bid limits [price_i, volume_i]
+        asks : np.array
+            The actual n first ask limits [price_i, volume_i] 
         """
         self.request_type = "depth"
         self.params = {
             'symbol': symbol,
-            'limit': 20
+            'limit': limit
         }
         response = self.get_request()
         bids = np.array(response["bids"])
         asks = np.array(response["asks"])
         return bids, asks
+    
+    def get_trades(self, symbol, limit=20):
+        """
+        Implement the get_trades method for Binance.
+        Get the last trades on the market for a symbol 
+
+        Parameters
+        ----------
+        symbol : str
+            Pair symbol (e.g 'BTCUSDT') 
+        limit : int
+            Size of the historic. (20 by default)
+
+        Returns
+        -------
+        Dict of 
+        """
+        self.request_type = "trades"
+        self.params = {
+            'symbol': symbol,
+            'limit': limit
+        }
+        response = self.get_request()
+        response = pd.DataFrame.from_dict(response)
+        response["time"] = pd.to_datetime(response["time"], unit='ms')
+        return response

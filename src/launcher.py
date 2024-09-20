@@ -10,6 +10,7 @@ __license__ = "All rights reserved - LICENSE file is at the root of the project"
 
 from .model_tools.model_utils import create_model
 from .api_tools import api_utils
+from .api_tools.binance_cheat import Stream
 
 class Launcher:
     """
@@ -23,12 +24,17 @@ class Launcher:
         Args:
             args (Namespace): Command-line arguments.
         """
-        self.mode = args.mode
+        self.CMD = args.CMD
         self.api = args.api
         self.api_key = args.api_key
         self.private_key = args.private_key
         self.symbol = args.symbol
-        self.model = create_model(args.model)
+        if args.output_file_name : 
+            self.output_file_name = args.output_file_name
+        if args.duration : 
+            self.duration = args.duration
+        if args.model:
+            self.model = create_model(args.model)
         if self.api :
             self.broker = api_utils.create_broker(self.api, self.api_key, self.private_key)
 
@@ -36,9 +42,13 @@ class Launcher:
         """
         Launch the execution of the model with the specified broker or input datas.
         """
-        if self.mode == "run":
+        if self.CMD == "run":
             if self.api :
-                response = self.broker.get_avg_price(self.symbol)
+                # First step is to get datas from the broker
+                # Temporary method using python-binance for now
+                my_stream = Stream()
+                my_stream.get_historical_datas(self.api_key, self.private_key, self.symbol, self.output_file_name, self.duration)
+                # Second step is to calibrate model from datas
                 print(response)
             quotes = self.model.compute_quotes(True,1,1,10,1,1,1,0)
             print(quotes)
