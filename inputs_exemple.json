@@ -3,7 +3,9 @@
         "api": "binance",
         "api_key": "Public_key",
         "private_key": "Private_key.pem",
-        "symbol": "BTCUSDT"
+        "symbol": "BNBBTC",
+        "duration": 120,
+        "output_file_name": "historical_datas.txt"
     },
     "model": "GueantLehalleFernandezTapia"
 }

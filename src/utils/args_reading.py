@@ -18,9 +18,7 @@ def process_arguments():
 
     parser = create_parser()
     args = parser.parse_args()
-
-    if args.input_file:
-        args = process_inputs_from_json(args)
+    args = process_inputs_from_json(args)
     return args
 
 def create_parser():
@@ -32,14 +30,9 @@ def create_parser():
                     description='What the program does',
                     epilog='Text at the bottom of help')
 
-    parser.add_argument('mode',choices=['run', 'test'], \
+    parser.add_argument('CMD',choices=['run', 'test'], \
                         help='Specify if you want "run" or "test" a strategy.')
-    parser.add_argument('--input_file', help='Specify input files')
-    parser.add_argument('--api', type=str, help='API (ex: binance)')
-    parser.add_argument('--api_key', type=str, help='API key')
-    parser.add_argument('--private_key', type=str, help='Path to your private key')
-    parser.add_argument('--symbol', type=str, help='Symbol (ex: BTCUSDT)')
-    parser.add_argument('--model', type=str, help='Modèle (ex: GueantLehalleFernandezTapia)')
+    parser.add_argument('--input_file', help='Path to a JSON input file')
 
     return parser
 
