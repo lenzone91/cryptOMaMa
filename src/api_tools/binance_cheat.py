@@ -53,7 +53,7 @@ class Stream():
         # start is required to initialise its internal loop
         self.twm.start()
         
-        self.streams = [symbol.lower() + '@depth5@100ms', symbol.lower() + '@bookTicker', symbol.lower() + '@trade']
+        self.streams = [symbol.lower() + '@depth@100ms', symbol.lower() + '@bookTicker', symbol.lower() + '@trade']
         
         self.twm.start_multiplex_socket(callback = self.handle_socket_message, streams = self.streams)
         

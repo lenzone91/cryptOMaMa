@@ -1,11 +1,10 @@
 {
-    "use_api": {
-        "api": "binance",
-        "api_key": "Public_key",
-        "private_key": "Private_key.pem",
-        "symbol": "BNBBTC",
-        "duration": 120,
-        "output_file_name": "historical_datas.txt"
-    },
+    "use_api": false,
+    "api": "binance",
+    "api_key": "Public_key",
+    "private_key": "Private_key.pem",
+    "symbol": "BNBBTC",
+    "duration": 360,
+    "historical_file": "historical_datas_exemple.txt",
     "model": "GueantLehalleFernandezTapia"
 }

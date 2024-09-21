@@ -42,19 +42,11 @@ def process_inputs_from_json(args):
     """
     try:
         with open(args.input_file, 'r', encoding='utf-8') as file:
+            
             json_data = json.load(file)
 
-            # Update the value of the "use_api" key if it is present in the JSON data
-            if 'use_api' in json_data:
-                # Update the values of the existing_args object with those from the
-                # "use_api" section
-                api_data = json_data['use_api']
-                for key, value in api_data.items():
+            for key, value in json_data.items():
                     setattr(args, key, value)
-
-            # Update the value of the "model" key if it is present in the JSON data
-            if 'model' in json_data:
-                setattr(args, 'model', json_data['model'])
 
         return args
 

@@ -45,7 +45,7 @@ In a first step we will code these main features separately and then, connect th
         "private_key": "Private_key.pem",
         "symbol": "BNBBTC",
         "duration": 120,
-        "output_file_name": "historical_datas.txt"
+        "historical_file": "historical_datas.txt"
     },
     "model": "GueantLehalleFernandezTapia"
 }

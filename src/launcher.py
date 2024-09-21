@@ -10,7 +10,9 @@ __license__ = "All rights reserved - LICENSE file is at the root of the project"
 
 from .model_tools.model_utils import create_model
 from .api_tools import api_utils
+from .calibration_tools import calibration
 from .api_tools.binance_cheat import Stream
+
 
 class Launcher:
     """
@@ -25,30 +27,34 @@ class Launcher:
             args (Namespace): Command-line arguments.
         """
         self.CMD = args.CMD
-        self.api = args.api
-        self.api_key = args.api_key
-        self.private_key = args.private_key
+        self.use_api = args.use_api
         self.symbol = args.symbol
-        if args.output_file_name : 
-            self.output_file_name = args.output_file_name
-        if args.duration : 
-            self.duration = args.duration
+        if args.historical_file : 
+            self.historical_file = args.historical_file
         if args.model:
             self.model = create_model(args.model)
-        if self.api :
-            self.broker = api_utils.create_broker(self.api, self.api_key, self.private_key)
-
+        if self.use_api :
+            try : 
+                self.api = args.api
+                self.duration = args.duration
+                self.api_key = args.api_key
+                self.private_key = args.private_key
+                self.broker = api_utils.create_broker(self.api, self.api_key, self.private_key)
+            except Exception as e:
+                print("Terminated unsuccessfully")
+                raise Exception("Terminated unsuccessfully") from e
     def launch(self):
         """
         Launch the execution of the model with the specified broker or input datas.
         """
-        if self.CMD == "run":
-            if self.api :
-                # First step is to get datas from the broker
+        if self.CMD == "test":
+            # First step is to get datas from the broker
+            if self.use_api :
                 # Temporary method using python-binance for now
                 my_stream = Stream()
-                my_stream.get_historical_datas(self.api_key, self.private_key, self.symbol, self.output_file_name, self.duration)
-                # Second step is to calibrate model from datas
-                print(response)
+                my_stream.get_historical_datas(self.api_key, self.private_key, self.symbol, self.historical_file, self.duration)
+            # Second step is to calibrate model from datas
+            calibration.transaction_intensity(self.historical_file)
+            print(response)
             quotes = self.model.compute_quotes(True,1,1,10,1,1,1,0)
             print(quotes)

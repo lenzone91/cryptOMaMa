@@ -44,9 +44,9 @@ class GueantLehalleFernandezTapia(Model):
         with_penalty : bool
             Define if there is a penalty value.
         A : float
-            First parameter of density function of the point process ``A*e^(-k*quote)``.
+            First parameter of the intensity function of the point process ``A*e^(-k*quote)``.
         k : float
-            Second parameter of density function of the point process ``A*e^(-k*quote)``.
+            Second parameter of the intensity function of the point process ``A*e^(-k*quote)``.
         q : float
             The inventory of the market maker.
         delta : float
