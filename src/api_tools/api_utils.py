@@ -10,13 +10,13 @@ __license__ = "All rights reserved - LICENSE file is at the root of the project"
 
 from .brokers.binance import Binance
 
-def create_broker(api, api_key, private_key):
+def create_broker(api, api_key, private_key, historical_file):
     """
     Factory method to create the correct instance of an API class.
     """
 
     if api == "binance":
-        return Binance(api_key, private_key)
+        return Binance(api_key, private_key, historical_file)
     #elif api == "cryptocom":
     #    return CryptoCom(api_key, private_key)
     # Ajoutez d'autres cas selon les besoins pour de nouveaux brokers

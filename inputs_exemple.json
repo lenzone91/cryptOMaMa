@@ -1,5 +1,5 @@
 {
-    "use_api": false,
+    "use_api": true,
     "api": "binance",
     "api_key": "Public_key",
     "private_key": "Private_key.pem",

@@ -86,7 +86,7 @@ def transaction_intensity(history_file: str):
 
     with open(history_file, 'r') as file:
         # Get all distances between midprice and trade price + volume
-        rows = [json.loads(row.rstrip()) for row in file]
+        rows = [json.loads(json.loads(row.rstrip())) for row in file]
 
     #sort by date
     rows = sorted(rows, key=lambda x: x['data'].get('E', float('inf')))
@@ -109,7 +109,6 @@ def transaction_intensity(history_file: str):
                         last_depth_row_idx = backward_idx
                     elif last_depth_row :
                         begin_time = dt.datetime.fromtimestamp(int(last_depth_row["E"])/1000)
-                        times_to_execute.append(end_time - begin_time)
                         
                         mid_price = get_midprice(last_depth_row)
                         
@@ -120,6 +119,7 @@ def transaction_intensity(history_file: str):
                             if price == float(limit[0]) and float(limit[1]):
                                 distances.append(mid_price - price)
                                 volumes.append(float(limit[1]))
+                                times_to_execute.append(end_time - begin_time)
                                 #update the volume to process
                                 volume -= float(limit[1])
                                 break
@@ -127,6 +127,7 @@ def transaction_intensity(history_file: str):
                             if price == float(limit[0]) and float(limit[1]): 
                                 distances.append(price - mid_price)
                                 volumes.append(float(limit[1]))
+                                times_to_execute.append(end_time - begin_time)
                                 #update the volume to process
                                 volume -= float(limit[1])
                                 break
@@ -143,9 +144,7 @@ def transaction_intensity(history_file: str):
                                 is_limit = is_limit_in_LOB(next_lob, price)
 
                                 if is_limit :
-                                    begin_time = dt.datetime.fromtimestamp(int(next_lob["E"])/1000)
-                                    times_to_execute.append(end_time - begin_time)
-                                    
+                                    begin_time = dt.datetime.fromtimestamp(int(next_lob["E"])/1000)                                    
                                     mid_price = get_midprice(next_lob)
                                     
                                     if not mid_price :
@@ -155,6 +154,7 @@ def transaction_intensity(history_file: str):
                                         if price == float(limit[0]) and float(limit[1]):
                                             distances.append(mid_price - price)
                                             volumes.append(float(limit[1]))
+                                            times_to_execute.append(end_time - begin_time)
                                             #update the volume to process
                                             volume -= float(limit[1])
                                             break
@@ -162,6 +162,7 @@ def transaction_intensity(history_file: str):
                                         if price == float(limit[0]) and float(limit[1]): 
                                             distances.append(price - mid_price)
                                             volumes.append(float(limit[1]))
+                                            times_to_execute.append(end_time - begin_time)
                                             #update the volume to process
                                             volume -= float(limit[1])
                                             break
