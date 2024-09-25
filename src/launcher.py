@@ -9,6 +9,7 @@ __copyright__ = "Copyright 2023, CryptOMaMa"
 __license__ = "All rights reserved - LICENSE file is at the root of the project"
 
 import os
+import shutil
 import time
 
 from .model_tools.model_utils import create_model
@@ -31,8 +32,8 @@ class Launcher:
         self.CMD = args.CMD
         self.use_api = args.use_api
         self.symbol = args.symbol
-        if args.historical_file : 
-            self.historical_file = args.historical_file
+        if args.historical_dir : 
+            self.historical_dir = args.historical_dir
         if args.model:
             self.model = create_model(args.model)
         if self.use_api :
@@ -41,7 +42,7 @@ class Launcher:
                 self.duration = args.duration
                 self.api_key = args.api_key
                 self.private_key = args.private_key
-                self.broker = api_utils.create_broker(self.api, self.api_key, self.private_key, self.historical_file)
+                self.broker = api_utils.create_broker(self.api, self.api_key, self.private_key, self.historical_dir)
             except Exception as e:
                 print("Terminated unsuccessfully")
                 raise Exception("Terminated unsuccessfully") from e
@@ -50,16 +51,17 @@ class Launcher:
         Launch the execution of the model with the specified broker or input datas.
         """
         if self.CMD == "run":
+            
+            if self.use_api :
+                # remove existing file : 
+                if os.path.isdir(self.historical_dir) :
+                    shutil.rmtree(self.historical_dir)
 
-            # remove existing file : 
-            if os.path.isfile(self.historical_file) :
-                os.remove(self.historical_file)
-
-            broker = api_utils.create_broker("binance", self.api_key, self.private_key, self.historical_file)
-            broker.launch_websocket_in_thread(self.symbol)
-            time.sleep(3600)
+                broker = api_utils.create_broker("binance", self.api_key, self.private_key, self.historical_dir)
+                broker.launch_websocket_in_thread(self.symbol)
+                time.sleep(self.duration)
             while 1:
-                calibration.transaction_intensity(self.historical_file)
+                calibration.transaction_intensity(self.historical_dir)
                 print("")
             quotes = self.model.compute_quotes(True,1,1,10,1,1,1,0)
             print(quotes)

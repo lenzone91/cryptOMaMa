@@ -9,7 +9,10 @@ __copyright__ = "Copyright 2023, CryptOMaMa"
 __license__ = "All rights reserved - LICENSE file is at the root of the project"
 
 import json
+import os
+import numpy as np
 import datetime as dt
+from itertools import chain
 
 
 def is_limit_in_LOB(lob : dict, price : float):
@@ -27,11 +30,11 @@ def is_limit_in_LOB(lob : dict, price : float):
         Is the trade price is present in the LOB
     """
     found = False #is the trade price is found in the last LOB limits
-    for limit in lob["b"]:
+    for limit in lob["bids"]:
         if float(price) == float(limit[0]) and float(limit[1]) != 0:
             found = True
             break
-    for limit in lob["a"]:
+    for limit in lob["asks"]:
         if float(price) == float(limit[0]) and float(limit[1]) != 0: 
             found = True
             break
@@ -39,18 +42,18 @@ def is_limit_in_LOB(lob : dict, price : float):
 
 def get_midprice(lob : dict):
     
-    if len(lob["a"]) == 0 or len(lob["b"]) == 0 : 
+    if len(lob["asks"]) == 0 or len(lob["bids"]) == 0 : 
         return None #No midprice
     
     best_ask_price = None
     best_bid_price = None
 
     # Possible to have a volume set to 0 in the LOB
-    for limit in lob["a"]:
+    for limit in lob["asks"]:
         if float(limit[1]) != 0 :
             best_ask_price = float(limit[0])
             break
-    for limit in lob["b"]:
+    for limit in lob["bids"]:
         if float(limit[1]) != 0 :
             best_bid_price = float(limit[0])
             break
@@ -60,7 +63,7 @@ def get_midprice(lob : dict):
     else : 
         return None
 
-def transaction_intensity(history_file: str):
+def transaction_intensity(history_dir: str):
     """
     Calibrate parameters of the intensity function of sell and buy depending 
     on the spread between a quote and the midprice. 
@@ -84,13 +87,98 @@ def transaction_intensity(history_file: str):
     volumes = []
     times_to_execute = []
 
-    with open(history_file, 'r') as file:
-        # Get all distances between midprice and trade price + volume
-        rows = [json.loads(json.loads(row.rstrip())) for row in file]
+    with open(os.path.join(history_dir,"depth.txt"), 'r') as depth_file:
+        # Create dict of pair : "update_id":"Event_time"
+        links = {json.loads(row)["u"]: json.loads(row)["E"] for row in depth_file}
+
+    depth_arr = []
+    with open(os.path.join(history_dir,"depth20.txt"), 'r') as depth20_file:
+        # Create np array : [Event_time, bid_price1, bid_volume1, ..., bid_price20, bid_volume20, ask_price1, ask_volume1, ... ask_price20, ask_volume20]
+        for row in depth20_file : 
+            curr_row = json.loads(row)
+            if len(curr_row["bids"]) != 20 or len(curr_row["asks"]) != 20:
+                raise ValueError("Not a full order book")
+            depth_arr.append([links[curr_row["lastUpdateId"]], *list(chain(*curr_row["bids"])), *list(chain(*curr_row["asks"]))])
+    depth_arr = np.array(depth_arr, dtype = float)
+    depth_arr = depth_arr[np.argsort(depth_arr[:, 0])]
+
+    with open(os.path.join(history_dir,"aggTrade.txt"), 'r') as agg_trade_file:
+        # Create np array : [Event_time, p, q]
+        trades = np.array([[json.loads(row)["E"], json.loads(row)["a"], json.loads(row)["p"], json.loads(row)["q"]] for row in agg_trade_file], dtype = float)
+    trades = trades[np.argsort(trades[:, 1])]
+    trades = np.delete(trades, 1, 1)
+
+    for trade in trades :
+        #On parcours tous les trades 
+        #On récupère les LOB antérieurs à la date du trade
+        for idx, sub_depth_arr in enumerate(depth_arr[depth_arr[:,0] < trade[0]][::-1]) : 
+            #On parcours les LOB en sens inverse en cherchant si le prix du trade existe dans le current LOB
+            if not trade[1] in sub_depth_arr[1::2] and idx < 2: 
+                # L'ordre est introuvable, on passe au suivant
+                print("Unfoundable due to update rate of 100ms")
+                break
+            elif not trade[1] in sub_depth_arr[1::2] :
+                #On vient de trouver le LOB contenant l'ajout du LO qui vient d'être éxéctué
+                lim_indexes = []
+                for lob in depth_arr[depth_arr[:,0] < trade[0]][::-1][:idx] :
+
+                    lim_indexes.append(np.where(lob[1::2] == trade[1])[0][0])
+
+                if lim_indexes[-1] > 19 : 
+                    opposite_idx = 0
+                else : 
+                    opposite_idx = 20
+                    
+                if not np.isnan(depth_arr[depth_arr[:,0] < trade[0]][::-1][idx-1][1::2][opposite_idx]):
+                    times_to_execute.append(dt.datetime.fromtimestamp(int(trade[0])/1000) - dt.datetime.fromtimestamp(int(depth_arr[depth_arr[:,0] < trade[0]][::-1][idx-1][0])/1000))            
+                    distances.append(abs(depth_arr[depth_arr[:,0] < trade[0]][::-1][idx-1][1::2][lim_indexes[-1]] - depth_arr[depth_arr[:,0] < trade[0]][::-1][idx-1][1::2][opposite_idx]))
+                    volumes.append(min(depth_arr[depth_arr[:,0] < trade[0]][::-1][idx-1][2::2][lim_indexes[-1]], trade[2]))
+                    
+                    for lob_idx, lob in enumerate(depth_arr[depth_arr[:,0] < trade[0]][::-1][:idx-1]):
+                        depth_arr_slice = depth_arr[depth_arr[:, 0] < trade[0]]
+                        depth_arr_slice[::-1][:idx-1][lob_idx][2::2][lim_indexes[lob_idx]] -= trade[2]
+
+                        if depth_arr_slice[::-1][:idx-1][lob_idx][2::2][lim_indexes[lob_idx]] == 0 :
+                            depth_arr_slice[::-1][:idx-1][lob_idx][1::2][lim_indexes[lob_idx]] = np.nan
+
+                        elif depth_arr_slice[::-1][:idx-1][lob_idx][2::2][lim_indexes[lob_idx]] < 0 :
+                            # Si négatif alors le trade va consomer d'autres LO 
+                            # Reparcourir la liste dans l'autre sens
+                            print("")
+                        depth_arr[depth_arr[:, 0] < trade[0]] = depth_arr_slice
+
+                break
+
+    print("")
+
 
     #sort by date
     rows = sorted(rows, key=lambda x: x['data'].get('E', float('inf')))
 
+    depth20_data = []
+    depth_data = []
+    trade_data = []
+
+    for item in rows:
+        if "depth20" in item['stream']:
+            depth20_data.append(item)
+        elif "depth" in item['stream']:
+            depth_data.append(item)
+        elif "trade" in item["stream"]:
+            trade_data.append(item)
+
+    # Associer les valeurs de "E" dans "depth20@100ms" pour le "lastUpdateId" correspondant
+    for depth20 in depth20_data:
+        last_update_id = depth20["data"]["lastUpdateId"]
+        
+        for depth in depth_data:
+            if depth["data"]["u"] == last_update_id:
+                # Ajouter la clé "E" à l'entrée correspondante dans "depth20@100ms"
+                depth20["data"]["E"] = depth["data"]["E"]
+    
+    rows = depth20_data + trade_data
+    rows = sorted(rows, key=lambda x: x['data'].get('E', float('inf')))
+            
     for row_idx, row in enumerate(rows):
         
         if "trade" in row["stream"]:
@@ -115,7 +203,7 @@ def transaction_intensity(history_file: str):
                         if not mid_price :
                             break
                         
-                        for limit in last_depth_row["b"]:
+                        for limit in last_depth_row["bids"]:
                             if price == float(limit[0]) and float(limit[1]):
                                 distances.append(mid_price - price)
                                 volumes.append(float(limit[1]))
@@ -123,7 +211,7 @@ def transaction_intensity(history_file: str):
                                 #update the volume to process
                                 volume -= float(limit[1])
                                 break
-                        for limit in last_depth_row["a"]:
+                        for limit in last_depth_row["asks"]:
                             if price == float(limit[0]) and float(limit[1]): 
                                 distances.append(price - mid_price)
                                 volumes.append(float(limit[1]))
@@ -150,7 +238,7 @@ def transaction_intensity(history_file: str):
                                     if not mid_price :
                                         break
                                     
-                                    for limit in next_lob["b"]:
+                                    for limit in next_lob["bids"]:
                                         if price == float(limit[0]) and float(limit[1]):
                                             distances.append(mid_price - price)
                                             volumes.append(float(limit[1]))
@@ -158,7 +246,7 @@ def transaction_intensity(history_file: str):
                                             #update the volume to process
                                             volume -= float(limit[1])
                                             break
-                                    for limit in next_lob["a"]:
+                                    for limit in next_lob["asks"]:
                                         if price == float(limit[0]) and float(limit[1]): 
                                             distances.append(price - mid_price)
                                             volumes.append(float(limit[1]))

@@ -8,6 +8,7 @@ __author__ = "Enzo COGNEVILLE"
 __copyright__ = "Copyright 2023, CryptOMaMa"
 __license__ = "All rights reserved - LICENSE file is at the root of the project"
 
+import os
 from ..broker import Broker
 from threading import Thread
 import json
@@ -44,26 +45,34 @@ class Binance(Broker):
         Get the available order book orders on the market for a symbol 
     """
 
-    def __init__(self, api_key: str, private_key: str, output_file_name : str):
+    def __init__(self, api_key: str, private_key: str, historical_dir : str):
         super().__init__("Binance")
         self.api_key = api_key
         self.private_key = private_key
-        self.output_file_name = output_file_name
+        self.historical_dir = historical_dir
 
     #WEBSOCKET PART
 
     def message_handler(self, _, msg):
         print(msg)
         if 'data' in msg :
-            with open(self.output_file_name, "a") as file:
-                json.dump(msg, file)
+            if "depth20" in msg : 
+                file = "depth20.txt"
+            elif "aggTrade" in msg : 
+                file = "aggTrade.txt"
+            elif "depth" in msg : 
+                file = "depth.txt"
+            if not os.path.isdir(self.historical_dir):
+                os.mkdir(self.historical_dir)
+            with open(os.path.join(self.historical_dir,file), "a") as file:
+                json.dump(json.loads(msg)["data"], file)
                 file.write("\n")
         
     def open_web_socket(self, symbol):
         my_client = SpotWebsocketStreamClient(on_message=self.message_handler, is_combined=True)
 
         # Subscribe to a single symbol stream
-        my_client.subscribe(stream=[symbol.lower()+"@depth@100ms", symbol.lower()+"@trade"])
+        my_client.subscribe(stream=[symbol.lower()+"@depth@100ms", symbol.lower()+"@aggTrade", symbol.lower()+"@depth20@100ms"])
 
     def launch_websocket_in_thread(self, symbol):
 
