@@ -108,16 +108,24 @@ def transaction_intensity(history_dir: str):
     trades = trades[np.argsort(trades[:, 1])]
     trades = np.delete(trades, 1, 1)
 
-    for trade in trades :
+    for trade in trades :  
+
+        print(trade[0])     
         #On parcours tous les trades 
         #On récupère les LOB antérieurs à la date du trade
         for idx, sub_depth_arr in enumerate(depth_arr[depth_arr[:,0] < trade[0]][::-1]) : 
             #On parcours les LOB en sens inverse en cherchant si le prix du trade existe dans le current LOB
+
+            stop = False
+            if trade[1] in sub_depth_arr[1::2] and idx > 0 : 
+                if depth_arr[depth_arr[:,0] < trade[0]][::-1][idx-1][2::2][np.where(depth_arr[depth_arr[:,0] < trade[0]][::-1][idx-1][1::2] == trade[1])] < sub_depth_arr[2::2][np.where(sub_depth_arr[1::2] == trade[1])]:
+                    stop = True
+
             if not trade[1] in sub_depth_arr[1::2] and idx < 2: 
                 # L'ordre est introuvable, on passe au suivant
                 print("Unfoundable due to update rate of 100ms")
                 break
-            elif not trade[1] in sub_depth_arr[1::2] :
+            elif not trade[1] in sub_depth_arr[1::2] or stop :
                 #On vient de trouver le LOB contenant l'ajout du LO qui vient d'être éxéctué
                 lim_indexes = []
                 for lob in depth_arr[depth_arr[:,0] < trade[0]][::-1][:idx] :
@@ -134,22 +142,58 @@ def transaction_intensity(history_dir: str):
                     distances.append(abs(depth_arr[depth_arr[:,0] < trade[0]][::-1][idx-1][1::2][lim_indexes[-1]] - depth_arr[depth_arr[:,0] < trade[0]][::-1][idx-1][1::2][opposite_idx]))
                     volumes.append(min(depth_arr[depth_arr[:,0] < trade[0]][::-1][idx-1][2::2][lim_indexes[-1]], trade[2]))
                     
-                    for lob_idx, lob in enumerate(depth_arr[depth_arr[:,0] < trade[0]][::-1][:idx-1]):
-                        depth_arr_slice = depth_arr[depth_arr[:, 0] < trade[0]]
-                        depth_arr_slice[::-1][:idx-1][lob_idx][2::2][lim_indexes[lob_idx]] -= trade[2]
+                    depth_arr_slice = depth_arr[depth_arr[:, 0] < trade[0]]
 
-                        if depth_arr_slice[::-1][:idx-1][lob_idx][2::2][lim_indexes[lob_idx]] == 0 :
-                            depth_arr_slice[::-1][:idx-1][lob_idx][1::2][lim_indexes[lob_idx]] = np.nan
+                    for lob_idx, lob in enumerate(depth_arr[depth_arr[:,0] < trade[0]][::-1][:idx][::-1]):
+                        # On vient mettre à jour toutes les volumes disponibles entre la création de la limite et le MO
+                        
+                        depth_arr_slice[::-1][:idx][::-1][lob_idx][2::2][lim_indexes[::-1][lob_idx]] -= trade[2]
 
-                        elif depth_arr_slice[::-1][:idx-1][lob_idx][2::2][lim_indexes[lob_idx]] < 0 :
+                        if depth_arr_slice[::-1][:idx][::-1][lob_idx][2::2][lim_indexes[::-1][lob_idx]] < 0 :
                             # Si négatif alors le trade va consomer d'autres LO 
                             # Reparcourir la liste dans l'autre sens
-                            print("")
-                        depth_arr[depth_arr[:, 0] < trade[0]] = depth_arr_slice
+
+                            if lob_idx == 0 : 
+                                #Initialisation du volume restant
+                                last_vol_remain = depth_arr_slice[::-1][:idx][::-1][lob_idx][2::2][lim_indexes[::-1][lob_idx]]
+                            elif depth_arr_slice[::-1][:idx][::-1][lob_idx][2::2][lim_indexes[::-1][lob_idx]] != last_vol_remain and not np.isnan(depth_arr_slice[::-1][:idx][::-1][lob_idx][1::2][opposite_idx]) :
+                                # Le volume restant à être executé vient de changer,
+                                # le LO de l'index a donc aussi été executé 
+                                if depth_arr_slice[::-1][:idx][::-1][lob_idx][2::2][lim_indexes[::-1][lob_idx]] < last_vol_remain:
+                                    raise ValueError("Le volume qu'il reste a traiter est plus grand que ")
+                                else : 
+                                    times_to_execute.append(dt.datetime.fromtimestamp(int(trade[0])/1000) - dt.datetime.fromtimestamp(int(depth_arr_slice[::-1][:idx][::-1][lob_idx][0])/1000))            
+                                    distances.append(abs(depth_arr_slice[::-1][:idx][::-1][lob_idx][1::2][lim_indexes[::-1][lob_idx]] - depth_arr_slice[::-1][:idx][::-1][lob_idx][1::2][opposite_idx]))
+                                    volumes.append(abs(last_vol_remain - depth_arr_slice[::-1][:idx][::-1][lob_idx][2::2][lim_indexes[::-1][lob_idx]]))
+                                last_vol_remain = depth_arr_slice[::-1][:idx][::-1][lob_idx][2::2][lim_indexes[::-1][lob_idx]]
+                                depth_arr_slice[::-1][:idx][::-1][lob_idx][1::2][lim_indexes[lob_idx]] = np.nan
+
+                        elif depth_arr_slice[::-1][:idx][::-1][lob_idx][2::2][lim_indexes[::-1][lob_idx]] == 0 :
+                            depth_arr_slice[::-1][:idx][::-1][lob_idx][1::2][lim_indexes[::-1][lob_idx]] = np.nan
+
+                            
+                    depth_arr[depth_arr[:, 0] < trade[0]] = depth_arr_slice
+
+                        
 
                 break
+    
+    import matplotlib.pyplot as plt
+    from scipy import stats
+    from scipy.optimize import curve_fit
 
-    print("")
+    def func(x, a, c, d):
+        return a*np.exp(c*x)+d
+
+    distances = np.array(distances)
+    times_to_execute = np.array([t.total_seconds() for t in times_to_execute])
+    res = stats.linregress(distances, times_to_execute)
+    popt, pcov = curve_fit(func, distances, times_to_execute, bounds=((0, 0, 0), (np.inf, np.inf, np.inf)))
+    plt.scatter(distances, times_to_execute)
+    plt.scatter(distances, res.intercept + res.slope*distances)
+    plt.scatter(distances, func(distances, *popt))
+    plt.grid()
+    plt.show()
 
 
     #sort by date
