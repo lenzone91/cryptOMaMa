@@ -29,7 +29,7 @@ options:
 
 We separate this project of market making into 3 parts :
 
-    * The first one is use get the market data from the broker. For now, we use the library 'python-binance'. For safety we have to re-code this module to remove any possible backdoors. 
+    * The first one is used to get the market data from the broker. For now, we use the library 'python-binance'. For safety we have to re-code this module to remove any possible backdoors. 
     * The second one is used to calibrate the used market making model (GLFT for exemple) from the previous datas.
     * The third one is used to send the position on the broker.
   
